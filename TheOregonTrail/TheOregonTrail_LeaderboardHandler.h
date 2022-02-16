@@ -1,0 +1,33 @@
+#ifndef LEADERBOARDHANDLER_H
+#define LEADERBOARDHANDLER_H
+
+class LeaderboardDataEntry{
+private:
+	int id;
+	std::string username;
+	std::string date;
+	std::string time;
+	int score;
+
+	int setID();
+	std::string setUsername(bool setUsername_p);
+	std::string setDate();
+	std::string setTime();
+public:
+	LeaderboardDataEntry(int userScore_p = 0, bool setUsername_p = false);
+	int getID();
+	std::string getUsername();
+	std::string getDate();
+	std::string getTime();
+	int getScore();
+};
+
+void leaderboardDatabaseController(bool scoreSave = false, bool scoreLoad = false, LeaderboardDataEntry playerData = LeaderboardDataEntry(0));
+void leaderboardDataInput(int userScore_p = 0);
+void leaderboardDataOutput();
+
+std::string formatLeaderboardRecord(int rank_p, std::string player_p, std::string date_p, std::string time_p, int score_p);
+std::string formatLeaderboardField(std::string fieldEntry_p, int fieldWidth_p);
+std::string formatLeaderboardField(int fieldEntry_p, int fieldWidth_p);
+
+#endif //!LEADERBOARDHANDLER_H
