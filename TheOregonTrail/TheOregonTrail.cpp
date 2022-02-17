@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <ctime>
 #include "TheOregonTrail_LeaderboardHandler.h"
 
@@ -8,11 +9,5 @@
 
 int main()
 {
-    leaderboardDataInput(168);
-    leaderboardDataInput(795);
-    leaderboardDataInput(2);
-
-    leaderboardDataOutput();
-
     return 0;
 }

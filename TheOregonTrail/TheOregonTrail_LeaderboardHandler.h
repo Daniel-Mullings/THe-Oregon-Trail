@@ -10,11 +10,14 @@ private:
 	int score;
 
 	int setID();
-	std::string setUsername(bool setUsername_p);
+	std::string setUsername(bool setUsername_p, int invalidUsernameCounter = 0);
 	std::string setDate();
 	std::string setTime();
+
+	std::string formatDateTime(int dayOrhour_p, int monthOrminute_p, int yearOrsecond_p, int formatCode_p);
 public:
 	LeaderboardDataEntry(int userScore_p = 0, bool setUsername_p = false);
+
 	int getID();
 	std::string getUsername();
 	std::string getDate();

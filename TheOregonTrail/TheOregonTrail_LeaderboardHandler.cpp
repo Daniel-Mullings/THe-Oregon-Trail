@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -20,32 +22,100 @@ LeaderboardDataEntry::LeaderboardDataEntry(int userScore_p, bool setUsername_p)
 	time = setTime();
 	score = userScore_p;
 } //Default Constructor
+std::string LeaderboardDataEntry::formatDateTime(int dayOrhour_p, int monthOrminute_p, int yearOrsecond_p, int formatCode_p)
+{
+	std::stringstream formattedDateTime{ "" };
+
+	std::string dayOrHour_str{ std::to_string(dayOrhour_p) };
+	std::string monthOrminute_str{ std::to_string(monthOrminute_p) };
+	std::string yearOrsecond_str{ std::to_string(yearOrsecond_p) };
+
+	if (dayOrHour_str.length() == 1)
+		dayOrHour_str.insert(0, "0");
+	if (monthOrminute_str.length() == 1)
+		monthOrminute_str.insert(0, "0");
+	if (yearOrsecond_str.length() == 1)
+		yearOrsecond_str.insert(0, "0");
+
+	if (formatCode_p == 0)
+		formattedDateTime << dayOrHour_str << "/" << monthOrminute_str << "/" << yearOrsecond_str;
+	else if (formatCode_p == 1)
+		formattedDateTime << dayOrHour_str << ":" << monthOrminute_str << ":" << yearOrsecond_str;
+
+
+	return formattedDateTime.str();
+}
 
 int LeaderboardDataEntry::setID()
 {
 	return recordIDGen(prng);
 }
-std::string LeaderboardDataEntry::setUsername(bool setUsername_p)
+std::string LeaderboardDataEntry::setUsername(bool setUsername_p, int invalidUsernameCounter_p)
 {
-	if (setUsername_p) 
+	if (setUsername_p)
 	{
-		std::string usernameInput{ "" };
-		std::cout << "Enter your name: ";
-		std::getline(std::cin, usernameInput);
-		std::cout << std::endl;
+		std::cout << "-------------------------" << std::endl;
+		std::cout << "PLAYER SCOREBOARD DETAILS" << std::endl;
+		std::cout << "-------------------------" << std::endl;
 
-		return usernameInput;
+		int invalidUsernameCounter{ 0 };
+		std::string usernameIn;
+
+		while (invalidUsernameCounter <= 2)
+		{
+			std::cout << "(MAX: 24 CHARACTERS, ATTEMPT: " << invalidUsernameCounter + 1 << "/3)" << std::endl;
+			std::cout << "Enter your name: ";
+
+			std::getline(std::cin, usernameIn);
+
+			if (usernameIn.length() == 0 || usernameIn.length() > 24)
+			{
+				std::cout << "\nInvalid Username\n" << std::endl;
+				invalidUsernameCounter += 1;
+			}
+			else
+				std::cout << "\nNOTICE: USERNAME ENTRY SAVED!\n" << std::endl;
+
+				return usernameIn;
+		}
+
+		std::stringstream invalidUsername{ "" };
+		invalidUsername << "INVAL_UNAME@" << id << '>';
+
+		std::cout << "NOTICE: MAXIMUM ATTEMPTS REACHED!" << std::endl;
+		std::cout << "NOTICE: SETTING DEFAULT USERNAME: SUCCESS" << std::endl;
+		std::cout << "NOTICE: DEFAULT USERNAME:         <INVAL_UNAME@" << id << ">\n" << std::endl;
+		return invalidUsername.str();
 	}
-	else
-		return "";
+	return "";
 }
 std::string LeaderboardDataEntry::setDate()
 {
-	return "";
+	// current date/time based on current system
+	time_t now = std::time(0);
+	tm* ltm = std::localtime(&now);
+
+	//Print various components of tm structure.
+	int year{ 1900 + ltm->tm_year };
+	int month{ 1 + ltm->tm_mon };
+	int day{ ltm->tm_mday };
+	
+	return formatDateTime(day, month, year, 0);
 }
 std::string LeaderboardDataEntry::setTime()
 {
-	return "";
+	// current date/time based on current system
+	time_t now = std::time(0);
+	tm* ltm = localtime(&now);
+
+	//Print various components of tm structure.
+	std::ostringstream time{ "" };
+
+	int hours{ ltm->tm_hour };
+	int minutes{ ltm->tm_min };
+	int seconds{ ltm->tm_sec };
+
+	return formatDateTime(hours, minutes, seconds, 1);
 }
 
 int LeaderboardDataEntry::getID() 
