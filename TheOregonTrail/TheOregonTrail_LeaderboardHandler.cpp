@@ -1,11 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
 
-#include <iostream>
-#include <string>
-#include <sstream>
-#include <random>
-#include <ctime>
-
 #include "TheOregonTrail_LeaderboardHandler.h"
 #include "SQLite/sqlite3.h"
 
@@ -74,9 +68,10 @@ std::string LeaderboardDataEntry::setUsername(bool setUsername_p, int invalidUse
 				invalidUsernameCounter += 1;
 			}
 			else
+			{
 				std::cout << "\nNOTICE: USERNAME ENTRY SAVED!\n" << std::endl;
-
 				return usernameIn;
+			}
 		}
 
 		std::stringstream invalidUsername{ "" };

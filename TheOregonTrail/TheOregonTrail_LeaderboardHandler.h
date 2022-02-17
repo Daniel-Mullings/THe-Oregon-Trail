@@ -1,6 +1,12 @@
 #ifndef LEADERBOARDHANDLER_H
 #define LEADERBOARDHANDLER_H
 
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <random>
+#include <ctime>
+
 class LeaderboardDataEntry{
 private:
 	int id;
