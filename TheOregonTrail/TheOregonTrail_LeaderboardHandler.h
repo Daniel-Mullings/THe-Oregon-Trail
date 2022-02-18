@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <vector>
 #include <random>
 #include <ctime>
 
@@ -35,8 +36,7 @@ void leaderboardDatabaseController(bool scoreSave = false, bool scoreLoad = fals
 void leaderboardDataInput(int userScore_p = 0);
 void leaderboardDataOutput();
 
-std::string formatLeaderboardRecord(int rank_p, std::string player_p, std::string date_p, std::string time_p, int score_p);
+std::string formatLeaderboardRecord(std::string rank_p, std::string player_p, std::string date_p, std::string time_p, std::string score_p);
 std::string formatLeaderboardField(std::string fieldEntry_p, int fieldWidth_p);
-std::string formatLeaderboardField(int fieldEntry_p, int fieldWidth_p);
 
 #endif //!LEADERBOARDHANDLER_H

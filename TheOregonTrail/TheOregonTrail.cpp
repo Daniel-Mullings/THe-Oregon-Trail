@@ -2,5 +2,7 @@
 
 int main()
 {
+    leaderboardDataOutput();
+
     return 0;
 }
