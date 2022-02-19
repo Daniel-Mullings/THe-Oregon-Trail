@@ -2,29 +2,29 @@
 
 #include "TheOregonTrail_LeaderboardHandler.h"
 
+//STORES RANK FOR EACH LEADERBOARD ENTRY
+int rank_counter{ 0 };
 
-int rankCounter{ 0 };
-
-//PRNG
+//PSEUDO RANDOM NUMBER GENERATOR, GENERATE PRIMARY KEY FOR RECORDS IN SQLITE DATABASE Leaderboard.db
 std::mt19937 prng{static_cast<std::mt19937::result_type>(std::time(nullptr))};
 std::uniform_int_distribution<> recordIDGen{ 0,  9999999};
 
-//Class Function Definitions
-Leaderboard_Handler::LeaderboardDataEntry::LeaderboardDataEntry(int userScore_p, bool setUsername_p) 
+//CLASS FUNCTIONS
+Leaderboard_Handler::LeaderboardDataEntry::LeaderboardDataEntry(int p_userScore, bool p_setPlayerName)
 {
 	id = setID();
-	username = setUsername(setUsername_p);
+	player_name = setPlayerName(p_setPlayerName);
 	date = setDate();
 	time = setTime();
-	score = userScore_p;
-} //Default Constructor
-std::string Leaderboard_Handler::LeaderboardDataEntry::formatDateTime(int dayOrhour_p, int monthOrminute_p, int yearOrsecond_p, int formatCode_p)
+	score = p_userScore;
+}
+std::string Leaderboard_Handler::LeaderboardDataEntry::formatDateTime(int p_dayOrhour, int p_monthOrminute, int p_yearOrsecond, int p_formatCode)
 {
 	std::stringstream formattedDateTime{ "" };
 
-	std::string dayOrHour_str{ std::to_string(dayOrhour_p) };
-	std::string monthOrminute_str{ std::to_string(monthOrminute_p) };
-	std::string yearOrsecond_str{ std::to_string(yearOrsecond_p) };
+	std::string dayOrHour_str{ std::to_string(p_dayOrhour) };
+	std::string monthOrminute_str{ std::to_string(p_monthOrminute) };
+	std::string yearOrsecond_str{ std::to_string(p_yearOrsecond) };
 
 	if (dayOrHour_str.length() == 1)
 		dayOrHour_str.insert(0, "0");
@@ -33,85 +33,94 @@ std::string Leaderboard_Handler::LeaderboardDataEntry::formatDateTime(int dayOrh
 	if (yearOrsecond_str.length() == 1)
 		yearOrsecond_str.insert(0, "0");
 
-	if (formatCode_p == 0)
+	if (p_formatCode == 0)
 		formattedDateTime << dayOrHour_str << "/" << monthOrminute_str << "/" << yearOrsecond_str;
-	else if (formatCode_p == 1)
+	else if (p_formatCode == 1)
 		formattedDateTime << dayOrHour_str << ":" << monthOrminute_str << ":" << yearOrsecond_str;
 
-
+	//RETURN FORMATTED DATA OR TIME (DD:MM:YYYY, HH:MM:SS)
 	return formattedDateTime.str();
 }
 
 int Leaderboard_Handler::LeaderboardDataEntry::setID()
 {
+	//RETURNS RANDOMLY GENERATED NUMBER
 	return recordIDGen(prng);
 }
-std::string Leaderboard_Handler::LeaderboardDataEntry::setUsername(bool setUsername_p, int invalidUsernameCounter_p)
+std::string Leaderboard_Handler::LeaderboardDataEntry::setPlayerName(bool p_setPlayerName, int invalidUsernameCounterp_)
 {
-	if (setUsername_p)
+	if (p_setPlayerName)
 	{
 		std::cout << "-------------------------" << std::endl;
 		std::cout << "PLAYER SCOREBOARD DETAILS" << std::endl;
 		std::cout << "-------------------------" << std::endl;
 
-		int invalidUsernameCounter{ 0 };
-		std::string usernameIn;
+		int invalidPlayerNameCounter{ 0 };
+		std::string playerNameIn;
 
-		while (invalidUsernameCounter <= 2)
+		while (invalidPlayerNameCounter <= 2)
 		{
-			std::cout << "(MAX: 24 CHARACTERS, ATTEMPT: " << invalidUsernameCounter + 1 << "/3)" << std::endl;
+			std::cout << "\n(MAX: 24 CHARACTERS, ATTEMPT: " << invalidPlayerNameCounter + 1 << "/3)" << std::endl;
 			std::cout << "Enter your name: ";
 
-			std::getline(std::cin, usernameIn);
+			std::getline(std::cin, playerNameIn);
 
-			if (usernameIn.length() == 0 || usernameIn.length() > 24)
+			if (playerNameIn.length() == 0 || playerNameIn.length() > 24)
 			{
-				std::cout << "\nInvalid Username\n" << std::endl;
-				invalidUsernameCounter += 1;
+				std::cout << "Invalid Username!" << std::endl;
+				invalidPlayerNameCounter += 1;
 			}
 			else
 			{
-				std::cout << "\nNOTICE: USERNAME ENTRY SAVED!\n" << std::endl;
-				return usernameIn;
+				std::cout << std::endl;
+				Leaderboard_Handler::formatNotice("PLAYER NAME ENTRY SAVE STATE", 2);
+				std::cout << std::endl;
+				
+				//RETURNS INPUTTED PLAYER NAME
+				return playerNameIn;
 			}
 		}
+		std::stringstream invalidPlayerName{ "" };
+		invalidPlayerName << "<INVAL_UNAME@" << id << '>';
 
-		std::stringstream invalidUsername{ "" };
-		invalidUsername << "INVAL_UNAME@" << id << '>';
+		std::cout << std::endl;
+		Leaderboard_Handler::formatNotice("MAXIMUM ATTEMPTS REACHED", 0);
+		Leaderboard_Handler::formatNotice("SETTING DEFAULT USERNAME", 2);
+		Leaderboard_Handler::formatNotice("DEFAULT USERNAME", 5, invalidPlayerName.str());
+		std::cout << std::endl;
 
-		std::cout << "NOTICE: MAXIMUM ATTEMPTS REACHED!" << std::endl;
-		std::cout << "NOTICE: SETTING DEFAULT USERNAME: SUCCESS" << std::endl;
-		std::cout << "NOTICE: DEFAULT USERNAME:         <INVAL_UNAME@" << id << ">\n" << std::endl;
-		return invalidUsername.str();
+		//RETURNS PLACEHOLDER PLAYER NAME "<INVAL_UNAME@ID#>"
+		return invalidPlayerName.str();
 	}
+	//RETURNS EMPTY PLAYER NAME
 	return "";
 }
 std::string Leaderboard_Handler::LeaderboardDataEntry::setDate()
 {
-	// current date/time based on current system
+	//CURRENT DATE/TIME ON CURRENT SYSTEM
 	time_t now = std::time(0);
 	tm* ltm = std::localtime(&now);
 
-	//Print various components of tm structure.
+	//COMPONENTS OF tm STRUCTURE
 	int year{ 1900 + ltm->tm_year };
 	int month{ 1 + ltm->tm_mon };
 	int day{ ltm->tm_mday };
 	
+	//RETURNS DATE AS "DD/MM/YYYY"
 	return formatDateTime(day, month, year, 0);
 }
 std::string Leaderboard_Handler::LeaderboardDataEntry::setTime()
 {
-	// current date/time based on current system
+	//CURRENT DATE/TIME ON CURRENT SYSTEM
 	time_t now = std::time(0);
 	tm* ltm = localtime(&now);
 
-	//Print various components of tm structure.
-	std::ostringstream time{ "" };
-
+	//COMPONENTS OF tm STRUCTURE
 	int hours{ ltm->tm_hour };
 	int minutes{ ltm->tm_min };
 	int seconds{ ltm->tm_sec };
 
+	//RETURNS TIME AS "HH:MM:SS"
 	return formatDateTime(hours, minutes, seconds, 1);
 }
 
@@ -119,9 +128,9 @@ int Leaderboard_Handler::LeaderboardDataEntry::getID()
 {
 	return id;
 }
-std::string Leaderboard_Handler::LeaderboardDataEntry::getUsername()
+std::string Leaderboard_Handler::LeaderboardDataEntry::getPlayerName()
 {
-	return username;
+	return player_name;
 }
 std::string Leaderboard_Handler::LeaderboardDataEntry::getDate()
 {
@@ -136,44 +145,43 @@ int Leaderboard_Handler::LeaderboardDataEntry::getScore()
 	return score;
 }
 
-
-
+//SQLITE DATABASE INTERFACE FUNCTIONS
 int Leaderboard_Handler::callback(void* NotUsed, int argc, char** argv, char** azColName)
 {
 	std::vector<std::string> record;
 
-	for (int i = 0; i < argc; i++)
+	for (int counter = 0; counter < argc; counter++)
 	{
-		record.push_back(argv[i]);
-		if (i != 0 && (i % 4) == 0)
+		record.push_back(argv[counter]);
+		if (counter != 0 && (counter % 4) == 0)
 		{
-			rankCounter += 1;
-			std::cout << Leaderboard_Handler::formatLeaderboardRecord(std::to_string(rankCounter), record[1], record[2], record[3], record[4]);
+			rank_counter += 1;
+			std::cout << Leaderboard_Handler::formatLeaderboardRecord(std::to_string(rank_counter), record[1], record[2], record[3], record[4]);
 			record.clear();
 		}
 	}
 	return 0;
 }
-void Leaderboard_Handler::leaderboardDatabaseController(bool scoreSave, bool scoreLoad, Leaderboard_Handler::LeaderboardDataEntry playerData)
+void Leaderboard_Handler::leaderboardDatabaseController(bool p_scoreSave, bool p_scoreLoad, Leaderboard_Handler::LeaderboardDataEntry p_playerData)
 {
-	//Pointer to SQLite connection
+	/*
+	REFERENCE (LINE NUMBERS: #, #):
+
+	ONLINE TUTORIAL - https://videlais.com/2018/12/12/c-with-sqlite3-part-1-downloading-and-compiling/ - SQLITE DATABASE: HOW TO CREATE TABLES, INSERT AND SELECT DATA
+	*/
+
+	//POINTER TO SQLITE CONNECTION
 	sqlite3* database;
 	std::string sqlQuery{ "" };
 
-	// Save any error messages
-	char* zErrMsg = 0;
-
-	//Save the connection result
-	int sqlDatabaseFile{0};
+	//SAVE CONNECTION RESULT
+	int sqlDatabaseFile{ 0 };
 	sqlDatabaseFile = sqlite3_open("Leaderboard.db", &database);
 
-	//Test if there was an error
-	//if (sqlDatabaseFile)
-	//	std::cout << "NOTICE: Database Load State: FAIL: " << sqlite3_errmsg(database) << std::endl;
-	//else
-	//	std::cout << "NOTICE: Database Load State: SUCCESS" << std::endl;
+	//SAVE ERROR MESSAGES
+	char* zErrMsg{ 0 };
 
-	//Save SQL to create a table
+	//SQL QUERY (Create Table within SQLite Database Leaderboard.db)
 	sqlQuery = "CREATE TABLE Scores ("\
 		"ID		INT		PRIMARY KEY     NOT NULL," \
 		"Player STRING					NOT NULL," \
@@ -181,71 +189,113 @@ void Leaderboard_Handler::leaderboardDatabaseController(bool scoreSave, bool sco
 		"Time	STRING					NOT NULL," \
 		"Score	INT						NOT NULL);";
 
-	// Run the SQL (convert the string to a C-String with c_str() )
+	//EXECUTE SQL QUERY (CONVERT std::string TO C-STRING WITH c_str())
 	sqlDatabaseFile = sqlite3_exec(database, sqlQuery.c_str(), callback, 0, &zErrMsg);
 
-	//Insert Player Score As Record
-	if (scoreSave)
+	//INSERT PLAYER SCORE/DETAILS AS RECORD
+	if (p_scoreSave)
 	{
-		//CODE TO SAVE RECORD TO DATABASE
-		std::ostringstream SQLQuery_recordInsert;
-		SQLQuery_recordInsert << "INSERT INTO Scores ('ID', 'Player', 'Date', 'Time', 'Score') VALUES ('" << playerData.getID() << "', '" << playerData.getUsername() << "', '"
-																										  << playerData.getDate() << "', '" << playerData.getTime() << "', '" 
-																										  << playerData.getScore() << "');";
+		std::ostringstream SQLQuery_recordInsert{ "" };
+		SQLQuery_recordInsert << "INSERT INTO Scores ('ID', 'Player', 'Date', 'Time', 'Score') VALUES ('" << p_playerData.getID() << "', '" << p_playerData.getPlayerName() << "', '"
+																										  << p_playerData.getDate() << "', '" << p_playerData.getTime() << "', '"
+																										  << p_playerData.getScore() << "');";
 
 		sqlQuery = SQLQuery_recordInsert.str();
 		sqlDatabaseFile = sqlite3_exec(database, sqlQuery.c_str(), callback, 0, &zErrMsg);
-		
 	}
 	
-	//Display All Player Score Records
-	if (scoreLoad)
+	//RETRIVE ALL PLAYER SCORES/DETAILS BY SCORE HIGH TO LOW, PLAYER A TO Z
+	if (p_scoreLoad)
 	{
-		sqlQuery = "SELECT * FROM Scores ORDER BY Score DESC";
+		sqlQuery = "SELECT * FROM Scores ORDER BY Score DESC, Player ASC";
 		sqlDatabaseFile = sqlite3_exec(database, sqlQuery.c_str(), callback, 0, &zErrMsg);
-		/*
-		sqlQuery = "SELECT * FROM Scores";
-		sqlDatabaseFile = sqlite3_exec(database, sqlQuery.c_str(), callback, 0, &zErrMsg)
-		*/
 	}
 
-	//Close the connection
+	//CLOSE SQLITE CONNECTION
 	sqlite3_close(database);
 }
-void Leaderboard_Handler::leaderboardDataInput(int userScore_p)
+
+//SQLITE DATABASE DATA FORMATTING FUNCTIONS
+std::string Leaderboard_Handler::formatLeaderboardField(std::string p_fieldEntry, int p_columnWidth)
 {
-	LeaderboardDataEntry playerData(userScore_p, true);
+	int whitespace_padding{ p_columnWidth - int(p_fieldEntry.length()) };
+
+	if (p_fieldEntry.length() % 2 == 0)
+	{
+		p_fieldEntry.insert(0, std::string((whitespace_padding / 2), ' '));
+		p_fieldEntry.insert(p_fieldEntry.length(), std::string((whitespace_padding / 2), ' '));
+	}
+	else
+	{
+		p_fieldEntry.insert(0, std::string(((whitespace_padding + 1) / 2), ' '));
+		p_fieldEntry.insert(p_fieldEntry.length(), std::string(((whitespace_padding - 1) / 2), ' '));
+	}
+
+	//RETURNS FIELD FROM RECORD CENTER ALIGNED w/ WHITESPACE AS PADDING
+	return p_fieldEntry;
+}
+std::string Leaderboard_Handler::formatLeaderboardRecord(std::string p_rank, std::string p_player, std::string p_date, std::string p_time, std::string p_score)
+{
+	std::string formattedLeaderboardRecord{ '|' + formatLeaderboardField(p_rank, 10) + '|' + formatLeaderboardField(p_player, 24)
+										  + '|' + formatLeaderboardField(p_date, 10) + '|' + formatLeaderboardField(p_time, 10) + '|' + formatLeaderboardField(p_score, 11) + " |\n" };
+
+	//RETURNS FIELDS FROM RECORD FORMATTED AS "| RANK | PLAYER | DATE | TIME | SCORE |"
+	return formattedLeaderboardRecord;
+}
+
+//PRINTS FORMATTED NOTICES
+void Leaderboard_Handler::formatNotice(std::string p_notice, int p_noticeCode, std::string p_noticeStatus)
+{
+	int whitespace{ 35 - int(p_notice.length()) };
+
+	p_notice.insert(p_notice.end(), whitespace, '.');
+	p_notice.insert(0, "NOTICE: ");
+
+	switch (p_noticeCode)
+	{
+	case 0:
+		p_notice.append(": TRUE");
+		break;
+	case 1:
+		p_notice.append(": FALSE");
+		break;
+	case 2:
+		p_notice.append(": SUCCESS");
+		break;
+	case 3:
+		p_notice.append(": FAIL");
+		break;
+	case 4:
+		p_notice.append(": N/A");
+		break;
+	case 5:
+		p_notice.append(": " + p_noticeStatus);
+		break;
+	default:
+		break;
+	}
+	std::cout << p_notice << '\n';
+}
+
+//SQLITE DATABASE I/O FUNCTIONS
+void Leaderboard_Handler::leaderboardDataInput(int p_userScore)
+{
+	LeaderboardDataEntry playerData(p_userScore, true);
 	leaderboardDatabaseController(true, false, playerData);
 }
 void Leaderboard_Handler::leaderboardDataOutput()
 {
 	std::cout << "-----------------------------------------------------------------------" << std::endl
+			  << "|                             LEADERBOARD                             |" << std::endl
+			  << "-----------------------------------------------------------------------" << std::endl
 			  << "|   RANK   |         PLAYER         |   DATE   |   TIME   |   SCORE   |" << std::endl
 			  << "-----------------------------------------------------------------------" << std::endl;
 
 	leaderboardDatabaseController(false, true);
-}
 
-std::string Leaderboard_Handler::formatLeaderboardField(std::string fieldEntry_p, int fieldWidth_p)
-{
-	int whiteSpace = fieldWidth_p - fieldEntry_p.length();
+	std::cout << "-----------------------------------------------------------------------" << std::endl;
 
-	if (fieldEntry_p.length() % 2 == 0)
-	{
-		fieldEntry_p.insert(0, std::string((whiteSpace / 2), ' '));
-		fieldEntry_p.insert(fieldEntry_p.length(), std::string((whiteSpace / 2), ' '));
-	}
-	else
-	{
-		fieldEntry_p.insert(0, std::string(((whiteSpace + 1) / 2), ' '));
-		fieldEntry_p.insert(fieldEntry_p.length(), std::string(((whiteSpace - 1) / 2), ' '));
-	}
-	return fieldEntry_p;
-}
-std::string Leaderboard_Handler::formatLeaderboardRecord(std::string rank_p, std::string player_p, std::string date_p, std::string time_p, std::string score_p)
-{
-	std::string formattedLeaderboardRecord{ '|' + formatLeaderboardField(rank_p, 10) + '|' + formatLeaderboardField(player_p, 24)
-										  + '|' + formatLeaderboardField(date_p, 10) + '|' + formatLeaderboardField(time_p, 10) + '|' + formatLeaderboardField(score_p, 11) + " |\n" };
-
-	return formattedLeaderboardRecord;
+	std::cout << std::endl;
+	formatNotice("LEADERBOARD LOADED", 2);
+	std::cout << std::endl;
 }
