@@ -165,7 +165,7 @@ int Leaderboard_Handler::callback(void* NotUsed, int argc, char** argv, char** a
 void Leaderboard_Handler::leaderboardDatabaseController(bool p_scoreSave, bool p_scoreLoad, Leaderboard_Handler::LeaderboardDataEntry p_playerData)
 {
 	/*
-	REFERENCE (LINE NUMBERS: #, #):
+	REFERENCE (LINE NUMBERS: 174 - 182):
 
 	ONLINE TUTORIAL - https://videlais.com/2018/12/12/c-with-sqlite3-part-1-downloading-and-compiling/ - SQLITE DATABASE: HOW TO CREATE TABLES, INSERT AND SELECT DATA
 	*/
@@ -285,15 +285,15 @@ void Leaderboard_Handler::leaderboardDataInput(int p_userScore)
 }
 void Leaderboard_Handler::leaderboardDataOutput()
 {
-	std::cout << "-----------------------------------------------------------------------" << std::endl
+	std::cout << "+---------------------------------------------------------------------+" << std::endl
 			  << "|                             LEADERBOARD                             |" << std::endl
-			  << "-----------------------------------------------------------------------" << std::endl
+			  << "+----------+------------------------+----------+----------+-----------+" << std::endl
 			  << "|   RANK   |         PLAYER         |   DATE   |   TIME   |   SCORE   |" << std::endl
-			  << "-----------------------------------------------------------------------" << std::endl;
+			  << "+----------+------------------------+----------+----------+-----------+" << std::endl;
 
 	leaderboardDatabaseController(false, true);
 
-	std::cout << "-----------------------------------------------------------------------" << std::endl;
+	std::cout << "+---------------------------------------------------------------------+" << std::endl;
 
 	std::cout << std::endl;
 	formatNotice("LEADERBOARD LOADED", 2);
