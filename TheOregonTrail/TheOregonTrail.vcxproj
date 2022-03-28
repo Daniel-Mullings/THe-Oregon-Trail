@@ -143,11 +143,13 @@
     <ClCompile Include="SQLite\sqlite3.c" />
     <ClCompile Include="TheOregonTrail.cpp" />
     <ClCompile Include="TheOregonTrail_LeaderboardHandler.cpp" />
+    <ClCompile Include="TheOregonTrail_ShopHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SQLite\sqlite3.h" />
     <ClInclude Include="SQLite\sqlite3ext.h" />
     <ClInclude Include="TheOregonTrail_LeaderboardHandler.h" />
+    <ClInclude Include="TheOregonTrail_ShopHandler.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Leaderboard.db" />
