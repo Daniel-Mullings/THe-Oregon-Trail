@@ -5,7 +5,7 @@ float quantity = 1.0;
 float balance = 10.0;
 
 //recieves the data from the database to be outputted to the command window
-int DisplayCallback(void* NotUsed, int total, char** value, char** column)
+int Shop_Handler::DisplayCallback(void* NotUsed, int total, char** value, char** column)
 {
 	int counter = 0;
 
@@ -30,7 +30,7 @@ int DisplayCallback(void* NotUsed, int total, char** value, char** column)
 }
 
 //recieves the quantity from the database to be used in the rest of the program
-int ItemCallback(void* NotUsed, int total, char** value, char** column)
+int Shop_Handler::ItemCallback(void* NotUsed, int total, char** value, char** column)
 {
 	//sets the quantity to the value pulled from the table
 	quantity = atof(value[0]);
@@ -40,7 +40,7 @@ int ItemCallback(void* NotUsed, int total, char** value, char** column)
 
 
 //inserts a row into the SQL table, given the values
-void InsertRow(const char* file, std::string id, std::string item, std::string quantity, std::string price)
+void Shop_Handler::InsertRow(const char* file, std::string id, std::string item, std::string quantity, std::string price)
 {
 	//connects to the sql database
 	sqlite3* db;
@@ -59,7 +59,7 @@ void InsertRow(const char* file, std::string id, std::string item, std::string q
 }
 
 //creates the SQL table and fills it with data
-void CreateDatabase(const char* file)
+void Shop_Handler::CreateDatabase(const char* file)
 {
 	//connects to the sql database
 	sqlite3* db;
@@ -88,7 +88,7 @@ void CreateDatabase(const char* file)
 }
 
 //outputs the contents of the database to the command window
-void DisplayData(const char* file)
+void Shop_Handler::DisplayData(const char* file)
 {
 	//connects to the sql database
 	sqlite3* db;
@@ -112,7 +112,7 @@ void DisplayData(const char* file)
 }
 
 //updates the stock of a given item by a given amount
-void UpdateItem(const char* file, std::string item, int amount)
+void Shop_Handler::UpdateItem(const char* file, std::string item, int amount)
 {
 	//connects to the sql database
 	sqlite3* db;
@@ -131,7 +131,7 @@ void UpdateItem(const char* file, std::string item, int amount)
 }
 
 //handles the transaction of buying something from the database
-void Transaction(const char* file)
+void Shop_Handler::Transaction(const char* file)
 {
 	//connects sql database
 	sqlite3* db;
@@ -202,25 +202,4 @@ void Transaction(const char* file)
 		//tells the user there isnt enough stock for their purchase
 		std::cout << "Insufficient stock for transaction, please enter a valid quantity" << std::endl;
 	}
-}
-
-
-
-int main() {
-	//defines variabales that will be used later
-	const char* file = "shop.db";
-	int price, amount;
-
-	//delets current shop
-	remove(file);
-	//creates a new shop
-	CreateDatabase(file);
-
-	//creates a transaction
-	Transaction(file);
-	//displays the shop
-	std::cout << "\n";
-	DisplayData(file);
-
-	return 0;
 }

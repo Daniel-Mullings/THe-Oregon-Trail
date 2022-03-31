@@ -8,11 +8,11 @@
 //C++ standard library - https://en.cppreference.com/w/cpp/container/vector - stores data in a dynamically sized array
 #include <vector>
 //SQLITE - third party library - https://sqlite.org/download.html - used to store and query data in database format
-#include <SQLite/sqlite3.h>
+#include "SQLite/sqlite3.h"
 
 
 //Pre-defining functions to be given content later in the .cpp file
-namespace Shop
+namespace Shop_Handler
 {
 	float quantity;
 	float balance;
